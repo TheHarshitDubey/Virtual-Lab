@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Glycine pI — Gamified Virtual Lab (Reagents)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><img src="assets/logo.png" alt="logo" class="logo"> Gamified Virtual Lab</div>
+    <div class="top-controls">
+      <button id="start_experiment" class="start-btn">Start</button>
+      <button id="stop_experiment" class="stop-btn" disabled>Stop</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="left-panel card">
+      <h3>Procedure & Tasks</h3>
+      <ol id="procedure">
+        <li id="step_prep">Prepare glycine solution: add glycine vial to beaker and add water.</li>
+        <li id="step_add">Add NaOH from bottle via burette or by pouring reagent.</li>
+        <li id="step_record">Record pH readings and determine pI.</li>
+      </ol>
+      <div class="tasks">
+        <h4>Tasks</h4>
+        <ul>
+          <li id="t1">Prepare solution</li>
+          <li id="t2">Add titrant</li>
+          <li id="t3">Submit pI</li>
+        </ul>
+      </div>
+
+      <div class="reagents card small">
+        <h4>Reagents</h4>
+        <div class="reagent-list">
+          <div class="reagent" data-name="glycine" data-mmol="100" draggable="true">
+            <img src="assets/glycine_vial.png" alt="glycine" class="rimg"><div>Glycine vial<br><small>100 mmol</small></div>
+            <button class="pour" data-target="beaker" data-volume="10">Pour 10 mL</button>
+          </div>
+
+          <div class="reagent" data-name="naoh" data-molar="0.1" draggable="true">
+            <img src="assets/naoh_bottle.png" alt="naoh" class="rimg"><div>NaOH bottle<br><small>0.10 M</small></div>
+            <button class="pour" data-target="beaker" data-volume="1">Pour 1 mL</button>
+          </div>
+
+          <div class="reagent" data-name="water" draggable="true">
+            <img src="assets/reagent.png" alt="water" class="rimg"><div>Distilled water</div>
+            <button class="pour" data-target="beaker" data-volume="20">Pour 20 mL</button>
+          </div>
+        </div>
+        <div style="margin-top:8px"><small>Tip: you can drag reagents onto the beaker or use Pour buttons.</small></div>
+      </div>
+
+      <div class="controls card small">
+        <label>Initial volume (mL)<input id="vol_ml" type="number" value="50" min="5"></label>
+        <div class="btn-row">
+          <button id="reset">Reset</button>
+          <button id="export">Export CSV</button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="center-panel card">
+      <div class="lab-top">
+        <div class="beaker-area" id="beaker-area">
+          <img src="assets/beaker_large.png" class="beaker-img" alt="beaker">
+          <img src="assets/liquid.png" class="liquid-layer" id="liquid-layer" alt="liquid">
+          <img src="assets/electrode_real.png" class="electrode-img" alt="electrode">
+          <img src="assets/stirrer_icon.png" class="stirrer-img" alt="stirrer">
+          <div id="pour-animation" class="pour-anim" hidden></div>
+        </div>
+        <div class="burette-area">
+          <img src="assets/burette.png" class="burette-img" alt="burette">
+          <div class="burette-controls">
+            <input id="burette" type="range" min="0" max="50" step="0.05" value="0">
+            <div class="readout">Added: <span id="added_mL">0.00</span> mL</div>
+            <button id="add01">+0.1 mL</button>
+            <button id="auto" class="secondary">Auto</button>
+            <button id="stir" class="secondary">Stir</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="instruments">
+        <div class="ph-meter card">
+          <div class="ph-display">
+            pH<br><span id="ph_read">—</span>
+          </div>
+        </div>
+
+        <div class="curve card">
+          <canvas id="curve" width="700" height="260"></canvas>
+        </div>
+      </div>
+
+      <div class="log card">
+        <div class="log-header">Data Log <button id="clear_log" class="secondary small">Clear</button></div>
+        <table id="log_table"><thead><tr><th>Time</th><th>Added (mL)</th><th>pH</th><th>Action</th></tr></thead><tbody></tbody></table>
+      </div>
+    </section>
+
+    <aside class="right-panel card">
+      <h3>Analysis</h3>
+      <div class="readouts">
+        <div>pKa1: <b id="pka1">2.34</b></div>
+        <div>pKa2: <b id="pka2">9.60</b></div>
+        <div>pI (theory): <b id="pI">5.97</b></div>
+      </div>
+
+      <div class="guess card small">
+        <label>Guess pI<input id="guess_pI" type="number" step="0.01"></label>
+        <button id="submit_guess">Submit</button>
+        <div id="message" class="message"></div>
+      </div>
+
+      <div class="score card small">
+        <div>Score: <span id="score">0</span></div>
+        <div>Completed: <span id="tasks">0</span>/3</div>
+      </div>
+
+      <div class="card small">
+        <h4>Progress</h4>
+        <div class="progress-wrap"><div id="progress" class="progress-bar" style="width:0%"></div></div>
+        <div class="achievements" id="achievements"><div class="ach" id="ach_start">Ready</div><div class="ach" id="ach_first">—</div><div class="ach" id="ach_pi">—</div></div>
+      </div>
+
+      <div class="help card small">
+        <h4>Hints</h4>
+        <p>Drag reagents onto the beaker to add them, then stir — the simulation updates pH and progress.</p>
+      </div>
+
+    </aside>
+  </main>
+
+  <footer class="foot">Interactive simulation — add reagents, pour, stir, and find pI.</footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
