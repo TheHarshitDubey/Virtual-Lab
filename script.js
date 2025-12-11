@@ -1,4 +1,3 @@
-// Gamified reagents simulation
 const pKa1 = 2.34, pKa2 = 9.60;
 const expected_pI = (pKa1 + pKa2)/2;
 const gly_mmol_in = document.getElementById('glycine_mmol') || {value:10};
@@ -28,7 +27,7 @@ let running = false; let autoInterval = null;
 
 // internal solution state (mmol)
 let beaker = {volume_mL: parseFloat(vol_ml_in.value || 50), gly_mmol: 0, naoh_mmol: 0};
-// titrant concentration for NaOH bottle default 0.1 M
+// titrant concentration of NaOH bottle default 0.1 M
 const naoh_M = 0.1;
 
 // utility
@@ -71,8 +70,7 @@ beakerArea.addEventListener('drop', (e)=>{
   const data = JSON.parse(e.dataTransfer.getData('text/plain'));
   pourReagentByName(data.name, true);
 });
-
-// Pour button handlers
+// Pour button 
 document.querySelectorAll('.reagent .pour').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     const parent = btn.closest('.reagent');
@@ -91,12 +89,10 @@ function pourAnimation(){
   setTimeout(()=>{ anim.hidden = true; }, 520);
 }
 
-// Pouring logic: name, dragged flag, requested volume (mL)
 function pourReagentByName(name, dragged=false, vol=null){
   if(!running){ message.innerText = 'Start the experiment first.'; return; }
   pourAnimation();
   if(name==='glycine'){
-    // if vol null -> assume entire vial adds gly_mmol in dataset; else scale
     const vial_mmol = parseFloat(document.querySelector('.reagent[data-name="glycine"]').dataset.mmol);
     const add_mmol = vol ? (vial_mmol * (vol/100.0)) : vial_mmol;
     beaker.gly_mmol += add_mmol;
@@ -123,30 +119,27 @@ function pourReagentByName(name, dragged=false, vol=null){
   updateUI();
 }
 
-// Stir action: mixes and slightly speeds pH equilibration
+// Stir action
 stirBtn.addEventListener('click', ()=>{
   if(!running){ message.innerText='Start first'; return; }
   message.innerText = 'Stirring... equilibrating.';
-  // visual stir: rotate stirrer briefly
+
   const stirEl = document.querySelector('.stirrer-img');
   stirEl.style.transition = 'transform 0.4s linear';
   stirEl.style.transform = 'rotate(360deg)';
   setTimeout(()=>{ stirEl.style.transform='rotate(0deg)'; }, 420);
-  // slight score bump
+
   addScore(3);
   updateSolutionState();
   updateUI();
 });
 
-// Burette controls: update added_mL and solution when user moves slider
+// Burette controls
 burette.addEventListener('input', ()=>{
   if(!running) return;
   const v = parseFloat(burette.value);
   added_mL.innerText = v.toFixed(2);
-  // compute incremental added since previous recorded total by reading beaker.naoh_mmol
-  // For simplicity, treat burette as adding NaOH instantly to solution
   const totalNaOHAdded_mmol = naoh_M * v;
-  // set beaker.naoh_mmol to totalNaOHAdded_mmol (plus any poured)
   beaker.naoh_mmol = totalNaOHAdded_mmol;
   updateSolutionState();
   updateUI();
@@ -161,13 +154,11 @@ autoBtn.addEventListener('click', ()=>{
   autoInterval = setInterval(()=>{ if(parseFloat(burette.value) >= 50){ clearInterval(autoInterval); autoInterval=null; autoBtn.innerText='Auto'; } else { burette.value = Math.min(50, parseFloat(burette.value) + 0.2); burette.dispatchEvent(new Event('input')); } }, 120);
 });
 
-// compute pH using previous solver approach (approx)
 function computePHFromBeaker(){
   const gly_mmol = beaker.gly_mmol;
   const vol_mL = beaker.volume_mL;
   const nOH_mmol = beaker.naoh_mmol;
   const pKa1 = 2.34, pKa2 = 9.60;
-  // same logic as earlier computePH but using current beaker numbers
   let n_gly = gly_mmol;
   let n_H2A=0,n_HA=0,n_A=0;
   if(nOH_mmol <= n_gly){
@@ -203,14 +194,10 @@ function computePHFromBeaker(){
 }
 
 function updateSolutionState(){
-  // after any change, recompute pH and maybe mark tasks
   const pH = computePHFromBeaker();
   ph_read.innerText = pH.toFixed(2);
-  // if first record not done and glycine exists and water added, mark prepared
   if(beaker.gly_mmol > 0 && beaker.volume_mL > 10){ document.getElementById('t1').classList.add('done'); tasks = Math.max(tasks,1); tasksEl.innerText = tasks; updateProgress(); }
-  // if NaOH present mark t2
   if(beaker.naoh_mmol > 0){ document.getElementById('t2').classList.add('done'); tasks = Math.max(tasks,2); tasksEl.innerText = tasks; updateProgress(); }
-  // if pH near pI mark achievement
   if(Math.abs(pH - expected_pI) < 0.3){ achPi.innerText = 'Near pI'; achPi.style.background='#e6f9ff'; addScore(20); document.getElementById('t3').classList.add('done'); tasks = Math.max(tasks,3); tasksEl.innerText = tasks; updateProgress(); }
   drawCurve();
 }
@@ -247,7 +234,7 @@ document.getElementById('export').addEventListener('click', ()=>{
   const a = document.createElement('a'); a.href = url; a.download = 'glycine_log.csv'; a.click(); URL.revokeObjectURL(url);
 });
 
-// record button (in header of previous version) - we will add logging on +/- events
+// record button
 document.getElementById('burette').addEventListener('change', ()=>{ if(running) logReading('burette adjust'); });
 
 document.getElementById('submit_guess').addEventListener('click', ()=>{
@@ -280,7 +267,7 @@ updateSolutionState();
 updateUI();
 drawCurve();
 
-// draw titration curve approximation for preview
+//titration curve 
 function drawCurve(){
   ctx.clearRect(0,0,curve.width,curve.height);
   ctx.strokeStyle='rgba(11,111,182,0.15)'; ctx.lineWidth=1;
@@ -293,7 +280,6 @@ function drawCurve(){
   ctx.beginPath(); ctx.lineWidth=2; ctx.strokeStyle='#66d1ff';
   for(let i=0;i<=200;i++){
     const added = (i/200) * (maxAdd / titrantM);
-    // approximate pH as earlier (reuse compute but local)
     const nOH_mmol = titrantM * added;
     let n_gly = gly; let n_H2A=0,n_HA=0,n_A=0;
     if(nOH_mmol <= n_gly){ n_H2A = n_gly - nOH_mmol; n_HA = nOH_mmol; n_A = 0; }
