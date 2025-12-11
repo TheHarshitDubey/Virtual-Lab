@@ -1,9 +1,7 @@
-Gamified virtual lab with reagent adding (drag or pour), stir, burette control, data logging and CSV export.
+ Virtual lab to Determine the PI of Glycine using Potentiometric method.
 
 Files:
 - index.html
 - styles.css
 - script.js
 - assets/
-
-Open index.html in a modern browser.
