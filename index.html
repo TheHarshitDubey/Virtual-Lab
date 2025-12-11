@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Glycine pI — Gamified Virtual Lab (Reagents)</title>
+  <title>Glycine pI —Virtual Lab</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -17,7 +17,7 @@
 
   <main class="workspace">
     <aside class="left-panel card">
-      <h3>Procedure & Tasks</h3>
+        <h3>Procedure & Tasks</h3>
       <ol id="procedure">
         <li id="step_prep">Prepare glycine solution: add glycine vial to beaker and add water.</li>
         <li id="step_add">Add NaOH from bottle via burette or by pouring reagent.</li>
@@ -25,9 +25,9 @@
       </ol>
       <div class="tasks">
         <h4>Tasks</h4>
-        <ul>
+         <ul>
           <li id="t1">Prepare solution</li>
-          <li id="t2">Add titrant</li>
+             <li id="t2">Add titrant</li>
           <li id="t3">Submit pI</li>
         </ul>
       </div>
@@ -36,12 +36,14 @@
         <h4>Reagents</h4>
         <div class="reagent-list">
           <div class="reagent" data-name="glycine" data-mmol="100" draggable="true">
-            <img src="assets/glycine_vial.png" alt="glycine" class="rimg"><div>Glycine vial<br><small>100 mmol</small></div>
+            <img src="assets/glycine_vial.png" alt="glycine" class="rimg"> 
+            <div>Glycine vial<br><small>100 mmol</small></div>
             <button class="pour" data-target="beaker" data-volume="10">Pour 10 mL</button>
           </div>
 
           <div class="reagent" data-name="naoh" data-molar="0.1" draggable="true">
-            <img src="assets/naoh_bottle.png" alt="naoh" class="rimg"><div>NaOH bottle<br><small>0.10 M</small></div>
+            <img src="assets/naoh_bottle.png" alt="naoh" class="rimg"><div>NaOH bottle<br> 
+              <small>0.10 M</small></div>
             <button class="pour" data-target="beaker" data-volume="1">Pour 1 mL</button>
           </div>
 
@@ -69,7 +71,9 @@
           <img src="assets/liquid.png" class="liquid-layer" id="liquid-layer" alt="liquid">
           <img src="assets/electrode_real.png" class="electrode-img" alt="electrode">
           <img src="assets/stirrer_icon.png" class="stirrer-img" alt="stirrer">
-          <div id="pour-animation" class="pour-anim" hidden></div>
+          <div id="pour-animation" class="pour-anim" hidden>
+            
+          </div>
         </div>
         <div class="burette-area">
           <img src="assets/burette.png" class="burette-img" alt="burette">
@@ -96,7 +100,9 @@
       </div>
 
       <div class="log card">
-        <div class="log-header">Data Log <button id="clear_log" class="secondary small">Clear</button></div>
+        <div class="log-header">Data Log 
+          <button id="clear_log" class="secondary small">Clear
+          </button></div>
         <table id="log_table"><thead><tr><th>Time</th><th>Added (mL)</th><th>pH</th><th>Action</th></tr></thead><tbody></tbody></table>
       </div>
     </section>
@@ -123,7 +129,9 @@
       <div class="card small">
         <h4>Progress</h4>
         <div class="progress-wrap"><div id="progress" class="progress-bar" style="width:0%"></div></div>
-        <div class="achievements" id="achievements"><div class="ach" id="ach_start">Ready</div><div class="ach" id="ach_first">—</div><div class="ach" id="ach_pi">—</div></div>
+        <div class="achievements" id="achievements">
+          <div class="ach" id="ach_start">Ready</div><div class="ach" id="ach_first">
+            —</div><div class="ach" id="ach_pi">—</div></div>
       </div>
 
       <div class="help card small">
